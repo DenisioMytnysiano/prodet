@@ -1,5 +1,6 @@
 import asyncio
 import json
+import uuid
 from aiogram import Bot, Dispatcher, types
 from confluent_kafka import Producer
 from config import TelegramPublisherConfig
@@ -9,6 +10,12 @@ load_dotenv(find_dotenv())
 producer = Producer({ "bootstrap.servers": f"{TelegramPublisherConfig.KAFKA_HOST}:{TelegramPublisherConfig.KAFKA_PORT}"})
 bot = Bot(token=TelegramPublisherConfig.TELEGRAM_API_KEY)
 dp = Dispatcher()
+
+def delivery_report(err, msg):
+    if err is not None:
+        print(f"Failed to produce message. Error:{err}")
+    else:
+        print("Message delivered successfully")
 
 
 async def produce_message_to_kafka(message: types.Message):
@@ -25,8 +32,9 @@ async def produce_message_to_kafka(message: types.Message):
     }
     producer.produce(
         TelegramPublisherConfig.KAFKA_TOPIC,
-        key=f"{user_id}_{chat_id}",
+        key=str(uuid.uuid4),
         value=json.dumps(message),
+        on_delivery=delivery_report
     )
     producer.poll(0)
 

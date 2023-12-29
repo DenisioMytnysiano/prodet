@@ -1,0 +1,2 @@
+docker compose -f docker-compose-kafka.yml -f docker-compose-spark.yml -f docker-compose-pipeline.yml down
+docker compose -f docker-compose-kafka.yml -f docker-compose-spark.yml -f docker-compose-pipeline.yml up
