@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "propaganda_detector"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+pyspark = "^3.5.0"
+pandas = "^2.1.4"
+pyarrow = "^14.0.2"
+grpcio = "^1.60.0"
+google = "^3.0.0"
+protobuf = "^4.25.1"
+grpcio-status = "^1.60.0"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
