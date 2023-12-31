@@ -1,0 +1,39 @@
+version: '3.8'
+
+volumes:
+  pd-elastic_data:
+    name: pd-elastic_data
+  pd-kibana_data:
+    name: pd-kibana_data
+
+services:
+  pd-elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.3
+    ports:
+      - '9200:9200'
+    expose:
+      - '9200'
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    volumes:
+      - 'pd-elastic_data:/usr/share/elasticsearch/data'
+    networks:
+      - pd-elastic_network
+
+  # http://localhost:5601
+  pd-kibana:
+    image: docker.elastic.co/kibana/kibana:8.11.3
+    ports:
+      - '5601:5601'
+    environment:
+      - ELASTICSEARCH_HOSTS=http://pd-elasticsearch:9200
+    volumes:
+      - 'pd-kibana_data:/usr/share/kibana/data'
+    depends_on:
+      - pd-elasticsearch
+    networks:
+      - pd-elastic_network
+
+networks:
+  pd-elastic_network:

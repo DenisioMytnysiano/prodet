@@ -1,9 +1,9 @@
-version: '3.1'
+version: '3.8'
 
 services:
-  spark:
+  pd-spark:
     image: bitnami/spark:3.5.0
     command: ./sbin/start-connect-server.sh --packages org.apache.spark:spark-connect_2.12:3.5.0
     ports:
-      - "15002:15002"
-      - "4040:4040"
+      - '15002:15002'
+      - '4040:4040'

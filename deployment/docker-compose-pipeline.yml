@@ -1,14 +1,14 @@
-version: '3.1'
+version: '3.8'
 
 services:
-  telegram-bot:
+  pd-telegram-bot:
     image: telegram-bot
     environment:
-      TELEGRAM_API_KEY: ${TELEGRAM_API_KEY}
-      KAFKA_HOST: kafka
+      TELEGRAM_API_KEY: ${TELEGRAM_API_KEY:-}
+      KAFKA_HOST: pd-kafka
       KAFKA_PORT: 9093
       KAFKA_TOPIC: messages
     depends_on:
-      - kafka
+      - pd-kafka
     networks:
-      - kafka_network
+      - pd-kafka_network
