@@ -35,5 +35,17 @@ services:
     networks:
       - pd-elastic_network
 
+  pd-logstash:
+    image: logstash:8.11.3
+    depends_on:
+      - pd-elasticsearch
+      - pd-kafka
+    volumes:
+      - ./logstash/pipeline:/usr/share/logstash/pipeline/
+      - ./logstash/config:/usr/share/logstash/config/
+    networks:
+      - pd-elastic_network
+      - pd-kafka_network
+
 networks:
   pd-elastic_network:

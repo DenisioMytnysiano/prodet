@@ -1,23 +1,26 @@
 import json
+from datetime import datetime
 import pyspark.sql.functions as F
 from pyspark.sql.streaming.readwriter import DataStreamReader
-from pyspark.sql.types import FloatType
+from pyspark.sql.types import StringType, FloatType
+from pyspark.sql import Row
 
 from .config import Config
-from .spark import build_kafka_read_stream, build_spark_context, parse_kafka_stream_by_schema
+from .spark import (
+    build_kafka_read_stream, build_spark_context, 
+    parse_kafka_stream_by_schema, write_stream_to_kafka
+)
 from .schema import prepared_message_schema
 
 
 spark = build_spark_context(Config.SPARK_HOST, Config.SPARK_PORT)
 
+
 def init_propaganda_detector() -> None:
     kafka_url = f"{Config.KAFKA_HOST}:{Config.KAFKA_PORT}"
     input_stream = build_stream(kafka_url)
     processed_stream = process_stream(input_stream)
-    processed_stream.printSchema()
-
-    elastic_url = f"{Config.ELASTIC_HOST}:{Config.ELASTIC_PORT}"
-    write_stream_to_elastic(processed_stream, elastic_url, Config.ELASTIC_INDEX)
+    write_stream_to_kafka(processed_stream, kafka_url, Config.KAFKA_PROCESSED_TOPIC, "detector")
 
 def build_stream(kafka_url: str) -> None:
     raw_stream = build_kafka_read_stream(spark, kafka_url, Config.KAFKA_PREPARED_TOPIC)
@@ -25,24 +28,16 @@ def build_stream(kafka_url: str) -> None:
 
 def process_stream(stream: DataStreamReader) -> None:
     return (stream
-        .selectExpr("value.*", "key")
-        .withColumn("propaganda", predict_propaganda(F.col("text")))
+        .withColumn("value", process_message(F.col("value")))
     )
+
+@F.udf(returnType=StringType())
+def process_message(message_row: Row) -> str:
+    message = message_row.asDict()
+    message["propaganda"] = len(message["text"]) / 50
+    message["processed_at"] = datetime.now().isoformat()
+    return json.dumps(message)
 
 @F.udf(returnType=FloatType())
 def predict_propaganda(text: str) -> float:
     return len(text) / 100
-
-def write_stream_to_elastic(stream: DataStreamReader, elastic_url: str, resource: str) -> None:
-    (stream
-        .writeStream
-        .outputMode("update")
-        .format("org.elasticsearch.spark.sql")
-        .option("es.nodes", elastic_url)
-        .option("es.index.auto.create", "true")
-        .option("es.resource", resource)
-        .option("es.mapping.id", "key")
-        .option("checkpointLocation", "/tmp/checkpoint/elastic")
-        .start()
-        .awaitTermination()
-    )

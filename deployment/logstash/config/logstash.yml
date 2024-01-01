@@ -1,0 +1,2 @@
+node.name: prodet
+xpack.monitoring.enabled: false

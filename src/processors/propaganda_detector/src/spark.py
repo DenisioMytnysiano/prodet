@@ -25,3 +25,15 @@ def parse_kafka_stream_by_schema(stream: DataStreamReader, schema: StructType) -
         .selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
         .select(F.from_json(F.col("value"), schema).alias("value"), "key")
     )
+
+def write_stream_to_kafka(stream: DataStreamReader, kafka_url: str, topic: str, checkpoint_idx: str) -> None:
+    (stream
+        .writeStream
+        .outputMode("update")
+        .format("kafka")
+        .option("kafka.bootstrap.servers", kafka_url)
+        .option("checkpointLocation", f"/tmp/checkpoint/kafka-{checkpoint_idx}")
+        .option("topic", topic)
+        .start()
+        .awaitTermination()
+    )

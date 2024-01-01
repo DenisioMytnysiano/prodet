@@ -1,0 +1,2 @@
+- pipeline.id: prodet
+  path.config: '/usr/share/logstash/pipeline/logstash.conf'
