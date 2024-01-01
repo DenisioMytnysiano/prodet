@@ -2,9 +2,9 @@ version: '3.8'
 
 volumes:
   pd-kafka_data:
-    name: kafka_data
+    name: pd-kafka_data
   pd-zookeeper_data:
-    name: zookeeper_data
+    name: pd-zookeeper_data
 
 services:
   pd-zookeeper:
@@ -14,7 +14,7 @@ services:
     environment:
       - ZOOKEEPER_CLIENT_PORT=32181
     volumes:
-      - 'pd-zookeeper_data:/etc/kafka'
+      - pd-zookeeper_data:/etc/kafka
     networks:
       - pd-kafka_network
 
@@ -37,7 +37,7 @@ services:
     depends_on:
       - pd-zookeeper
     volumes:
-      - 'pd-kafka_data:/etc/kafka'
+      - pd-kafka_data:/etc/kafka
     networks:
       - pd-kafka_network
 

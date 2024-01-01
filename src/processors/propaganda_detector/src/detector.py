@@ -3,9 +3,11 @@ from pyspark.sql import SparkSession
 from pyspark.sql.streaming.readwriter import DataStreamReader
 
 from .config import Config
-from .spark import build_kafka_read_stream
+from .spark import build_kafka_read_stream, build_spark_context
 
-def init_propaganda_detector(spark) -> None:
+spark = build_spark_context(Config.SPARK_HOST, Config.SPARK_PORT)
+
+def init_propaganda_detector() -> None:
     kafka_url = f"{Config.KAFKA_HOST}:{Config.KAFKA_PORT}"
     input_stream = build_input_stream(spark, kafka_url)
     process_input_stream(input_stream)
@@ -16,7 +18,6 @@ def build_input_stream(spark: SparkSession, kafka_url: str) -> None:
 
 def process_input_stream(input_stream: DataStreamReader) -> None:
     (input_stream
-        .load()
         .writeStream
         .outputMode("append")
         .format("console")

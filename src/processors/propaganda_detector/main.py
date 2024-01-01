@@ -1,13 +1,19 @@
-from src.config import Config
+import sys
 from src.detector import init_propaganda_detector
-from src.spark import build_spark_context
 from src.normalizer import init_propaganda_normalizer
 
 
 def main():
-    spark = build_spark_context(Config.SPARK_HOST, Config.SPARK_PORT)
-    init_propaganda_normalizer(spark)
-    init_propaganda_detector(spark)
+    target = sys.argv[1]
+    match target:
+        case 'detector':
+            print('Started propaganda detector')
+            init_propaganda_detector()
+        case 'normalizer':
+            print('Started propaganda normalizer')
+            init_propaganda_normalizer()
+        case _:
+            raise Exception(f"Unable to initialize target: {target}")
 
 if __name__ == "__main__":
     main()

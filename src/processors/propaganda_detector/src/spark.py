@@ -1,5 +1,5 @@
 from pyspark.sql import SparkSession
-from pyspark.sql.streaming.readwriter import DataStreamReader, DataStreamWriter
+from pyspark.sql.streaming.readwriter import DataStreamReader
 
 
 def build_spark_context(host: str, port: str) -> SparkSession:

@@ -8,7 +8,8 @@ services:
       - '4040:4040'
       - '15002:15002'
     networks:
-      - pd-spark-network
+      - pd-spark_network
+      - pd-kafka_network
 
 networks:
-  pd-spark-network:
+  pd-spark_network:
