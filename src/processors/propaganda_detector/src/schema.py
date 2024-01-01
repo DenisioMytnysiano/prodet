@@ -11,10 +11,18 @@ base_struct_fields = [
     StructField("created_at", StringType(), False)
 ]
 
-prepared_struct_fields = [
+translated_struct_fields = [
     *base_struct_fields,
-    StructField("prepared_at", StringType(), False)
+    StructField("language", StringType(), False),
+    StructField("original_text", StringType(), False),
+    StructField("translated_at", StringType(), False)
+]
+
+prepared_struct_fields = [
+    *translated_struct_fields,
+    StructField("prepared_at", StringType(), False),
 ]
 
 raw_message_schema = StructType(base_struct_fields)
+translated_message_schema = StructType(translated_struct_fields)
 prepared_message_schema = StructType(prepared_struct_fields)
