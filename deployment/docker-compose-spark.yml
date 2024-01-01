@@ -3,7 +3,12 @@ version: '3.8'
 services:
   pd-spark:
     image: bitnami/spark:3.5.0
-    command: ./sbin/start-connect-server.sh --packages org.apache.spark:spark-connect_2.12:3.5.0
+    command: /bin/bash -c "/opt/bitnami/spark/sbin/start-connect-server.sh --packages org.apache.spark:spark-connect_2.12:3.5.0,org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.0,org.apache.kafka:kafka-clients:3.5.0"
     ports:
-      - '15002:15002'
       - '4040:4040'
+      - '15002:15002'
+    networks:
+      - pd-spark-network
+
+networks:
+  pd-spark-network:

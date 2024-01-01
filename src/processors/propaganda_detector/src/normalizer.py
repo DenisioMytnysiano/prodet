@@ -4,6 +4,7 @@ from pyspark.sql.streaming.readwriter import DataStreamReader
 
 from .config import Config
 from .spark import build_kafka_read_stream
+from .schema import raw_message_schema
 
 
 def init_propaganda_normalizer(spark: SparkSession) -> None:    
@@ -15,9 +16,11 @@ def init_propaganda_normalizer(spark: SparkSession) -> None:
 
 def build_input_stream(spark: SparkSession, kafka_url: str) -> DataStreamReader:
     base_stream = build_kafka_read_stream(spark, kafka_url, Config.KAFKA_RAW_TOPIC)
-    res = base_stream.selectExpr("CAST(value as string)")
-    print(res)
-    return (base_stream.selectExpr("value"))
+    return (base_stream
+        .selectExpr("CAST(value AS STRING)")
+        .select(F.from_json(F.col("value"), raw_message_schema).alias("data"))
+        .select("data.*")
+    )
 
 def apply_stream_transformation(input_stream: DataStreamReader) -> DataStreamReader:
     # TODO: implement translation
@@ -25,19 +28,18 @@ def apply_stream_transformation(input_stream: DataStreamReader) -> DataStreamRea
 
 def write_stream_to_topic(input_stream: DataStreamReader, kafka_url: str, topic: str) -> None:
     (input_stream
-        .load()
         .writeStream
-        .outputMode("append")
         .format("console")
+        .outputMode("update")
         .start()
         .awaitTermination()
     )
     # (input_stream
     #     .writeStream
-    #     .outputMode("kafka")
+    #     .outputMode("update")
     #     .format("kafka")
     #     .option("kafka.bootstrap.servers", kafka_url)
+    #     .option("checkpointLocation", "/tmp/checkpoint")
     #     .option("topic", topic)
     #     .start()
     #     .awaitTermination()
-    # )

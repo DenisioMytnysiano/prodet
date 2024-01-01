@@ -3,6 +3,8 @@ from dotenv import load_dotenv, find_dotenv
 
 load_dotenv(find_dotenv())
 
+os.environ['PYSPARK_SUBMIT_ARGS'] = '--packages org.apache.spark:spark-streaming-kafka-0-10_2.13:3.5.0,org.apache.spark:spark-sql-kafka-0-10_2.13:3.5.0 pyspark-shell'
+
 class Config:
     KAFKA_HOST = os.environ.get("KAFKA_HOST")
     KAFKA_PORT = os.environ.get("KAFKA_PORT")
