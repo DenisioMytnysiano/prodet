@@ -16,3 +16,4 @@ class Config:
 
     ELASTIC_HOST = os.environ.get("ELASTIC_HOST")
     ELASTIC_PORT = os.environ.get("ELASTIC_PORT")
+    ELASTIC_INDEX = "propaganda/document"

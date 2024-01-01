@@ -14,7 +14,7 @@ services:
     environment:
       - ZOOKEEPER_CLIENT_PORT=32181
     volumes:
-      - pd-zookeeper_data:/etc/kafka
+      - pd-zookeeper_data:/var/lib/zookeeper/data
     networks:
       - pd-kafka_network
 
@@ -37,7 +37,7 @@ services:
     depends_on:
       - pd-zookeeper
     volumes:
-      - pd-kafka_data:/etc/kafka
+      - pd-kafka_data:/var/lib/kafka
     networks:
       - pd-kafka_network
 

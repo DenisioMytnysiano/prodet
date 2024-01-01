@@ -5,6 +5,7 @@ from src.normalizer import init_propaganda_normalizer
 
 def main():
     target = sys.argv[1]
+    
     match target:
         case 'detector':
             print('Started propaganda detector')

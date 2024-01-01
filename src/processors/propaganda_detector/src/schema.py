@@ -1,4 +1,4 @@
-from pyspark.sql.types import StructType, StructField, StringType, FloatType, IntegerType
+from pyspark.sql.types import StructType, StructField, StringType
 
 base_struct_fields = [
     StructField("id", StringType(), False),
