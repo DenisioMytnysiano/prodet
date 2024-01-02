@@ -4,12 +4,6 @@ FILE_NAME = "russian-propaganda-restructured.csv"
 OUTPUT_FILE = "russian-propaganda-augmented.csv"
 
 synonim_aug = naw.SynonymAug(aug_src="wordnet")
-contextual_insert_aug = naw.ContextualWordEmbsAug(
-    model_path="bert-base-uncased", action="insert"
-)
-contextual_substitute_aug = naw.ContextualWordEmbsAug(
-    model_path="bert-base-uncased", action="substitute"
-)
 swap_aug = naw.RandomWordAug(action="swap")
 
 augmenters = [
