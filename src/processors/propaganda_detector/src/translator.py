@@ -12,7 +12,9 @@ from .spark import (
     parse_kafka_stream_by_schema, write_stream_to_kafka
 )
 from .schema import raw_message_schema
+
 spark = build_spark_context(Config.SPARK_HOST, Config.SPARK_PORT)
+
 
 def init_propaganda_translator() -> None:    
     kafka_url = f"{Config.KAFKA_HOST}:{Config.KAFKA_PORT}"
@@ -20,14 +22,17 @@ def init_propaganda_translator() -> None:
     prepared_stream = prepare_stream(input_stream)
     write_stream_to_kafka(prepared_stream, kafka_url, Config.KAFKA_TRANSLATED_TOPIC, "translator")
 
+
 def build_stream(kafka_url: str) -> DataStreamReader:
     raw_stream =  build_kafka_read_stream(spark, kafka_url, Config.KAFKA_RAW_TOPIC)
     return parse_kafka_stream_by_schema(raw_stream, raw_message_schema)
+
 
 def prepare_stream(stream: DataStreamReader) -> DataStreamReader:
     return (stream
         .withColumn("value", prepare_message(F.col("value")))
     )
+
 
 @F.udf(returnType=StringType())
 def prepare_message(message_row: Row) -> str:

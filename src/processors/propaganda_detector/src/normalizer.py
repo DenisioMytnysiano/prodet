@@ -1,5 +1,6 @@
 import json
 from datetime import datetime
+import uuid
 import pyspark.sql.functions as F
 from pyspark.sql import Row
 from pyspark.sql.streaming.readwriter import DataStreamReader
@@ -34,6 +35,7 @@ def prepare_stream(stream: DataStreamReader) -> DataStreamReader:
 @F.udf(returnType=StringType())
 def prepare_message(message_row: Row) -> str:
     message_dict = message_row.asDict()
+    message_dict["message_id"] = message_dict["id"]
+    message_dict["id"] = str(uuid.uuid4())
     message_dict["prepared_at"] = datetime.now().isoformat()
-    # TODO: implement translation
     return json.dumps(message_dict)

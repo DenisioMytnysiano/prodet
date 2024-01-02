@@ -6,7 +6,7 @@ from pyspark.sql.types import StructType
 
 def build_spark_context(host: str, port: str) -> SparkSession:
     return (SparkSession.builder
-        .appName("PropagandaDetector")
+        .appName("Prodet")
         .remote(f"sc://{host}:{port}")
         .config("spark.executorEnv.PYSPARK_PYTHON", "/opt/bitnami/python/bin/python3")
         .getOrCreate()

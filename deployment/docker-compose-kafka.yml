@@ -34,7 +34,11 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: true
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_CREATE_TOPICS: 'PropagandaDetector.Messages.Raw,PropagandaDetector.Messages.Translated,PropagandaDetector.Messages.Prepared,PropagandaDetector.Messages.Processed'
+      KAFKA_CREATE_TOPICS: >
+        Prodet.Messages.Raw:1:1,
+        Prodet.Messages.Translated:1:1,
+        Prodet.Messages.Prepared:1:1,
+        Prodet.Messages.Processed:1:1
     depends_on:
       - pd-zookeeper
     volumes:

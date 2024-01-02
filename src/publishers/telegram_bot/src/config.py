@@ -10,4 +10,4 @@ class Config:
 
     KAFKA_HOST = os.environ.get("KAFKA_HOST")
     KAFKA_PORT = os.environ.get("KAFKA_PORT")
-    KAFKA_TOPIC = "PropagandaDetector.Messages.Raw"
+    KAFKA_TOPIC = "Prodet.Messages.Raw"

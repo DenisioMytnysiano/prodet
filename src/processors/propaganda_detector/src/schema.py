@@ -21,6 +21,7 @@ translated_struct_fields = [
 prepared_struct_fields = [
     *translated_struct_fields,
     StructField("prepared_at", StringType(), False),
+    StructField("message_id", StringType(), False)
 ]
 
 raw_message_schema = StructType(base_struct_fields)
