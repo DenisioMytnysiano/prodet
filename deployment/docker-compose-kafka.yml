@@ -5,6 +5,8 @@ volumes:
     name: pd-kafka_data
   pd-zookeeper_data:
     name: pd-zookeeper_data
+  pd-zookeeper_log:
+    name: pd-zookeeper_log
 
 services:
   pd-zookeeper:
@@ -15,6 +17,7 @@ services:
       - ZOOKEEPER_CLIENT_PORT=32181
     volumes:
       - pd-zookeeper_data:/var/lib/zookeeper/data
+      - pd-zookeeper_log:/var/lib/zookeeper/log
     networks:
       - pd-kafka_network
 

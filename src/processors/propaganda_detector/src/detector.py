@@ -2,8 +2,8 @@ import json
 from datetime import datetime
 import pyspark.sql.functions as F
 from pyspark.sql.streaming.readwriter import DataStreamReader
-from pyspark.sql.types import StringType, FloatType
 from pyspark.sql import Row
+
 
 from .config import Config
 from .spark import (
@@ -29,15 +29,27 @@ def build_stream(kafka_url: str) -> None:
 def process_stream(stream: DataStreamReader) -> None:
     return (stream
         .withColumn("value", process_message(F.col("value")))
+        # .withColumn("prediction", process_message(F.col("value"))) # TODO: use pandas_udf
     )
 
-@F.udf(returnType=StringType())
-def process_message(message_row: Row) -> str:
-    message = message_row.asDict()
-    message["propaganda"] = len(message["text"]) / 50
-    message["processed_at"] = datetime.now().isoformat()
-    return json.dumps(message)
+# @F.pandas_udf(StringType(), PandasUDFType.SCALAR)
+@F.udf()
+def process_message(message_row: str) -> str:
+    import time
+    start = time.time()
+    from keras.models import load_model
+    import tensorflow_hub as hub
 
-@F.udf(returnType=FloatType())
-def predict_propaganda(text: str) -> float:
-    return len(text) / 100
+    message = message_row.asDict()
+    model = load_model("/etc/propaganda-model.keras", custom_objects={
+        'KerasLayer': hub.KerasLayer
+    })
+    prediction = model.predict([message["text"]])
+    print("PREDICTION_TEST_NEW", prediction)
+
+    message["propaganda"] = str(prediction[0][0])
+    message["processed_at"] = datetime.now().isoformat()
+    end = time.time()
+    print("TIME_USED_TEST_NEW", end - start)  
+
+    return json.dumps(message)
