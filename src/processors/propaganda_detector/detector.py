@@ -3,13 +3,12 @@ from datetime import datetime
 import pyspark.sql.functions as F
 from pyspark.sql.streaming.readwriter import DataStreamReader
 
-
-from .config import Config
-from .spark import (
+from src.config import Config
+from src.spark import (
     build_kafka_read_stream, build_spark_context, 
     parse_kafka_stream_by_schema, write_stream_to_kafka
 )
-from .schema import prepared_message_schema
+from src.schema import prepared_message_schema
 
 
 spark = build_spark_context(Config.SPARK_HOST, Config.SPARK_PORT)
@@ -39,18 +38,23 @@ def process_message(message_row: str) -> str:
     from keras.models import load_model
     import tensorflow_hub as hub
 
-    if not process_message.model:
+    if not hasattr(process_message, 'model'):
        process_message.model = load_model("/etc/propaganda-model.keras", custom_objects={
         'KerasLayer': hub.KerasLayer
     })
 
     message = message_row.asDict()
     prediction = process_message.model.predict([message["text"]])
+    propaganda = prediction[0][0]
     print("PREDICTION_TEST_NEW", prediction)
 
-    message["propaganda"] = str(prediction[0][0])
+    message["propaganda"] = str(propaganda)
     message["processed_at"] = datetime.now().isoformat()
+    message["is_propaganda"] = "1" if propaganda > 0.5 else "0"
     end = time.time()
     print("TIME_USED_TEST_NEW", end - start)  
 
     return json.dumps(message)
+
+if __name__ == '__main__':
+    init_propaganda_detector()

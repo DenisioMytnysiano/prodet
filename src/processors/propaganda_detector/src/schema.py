@@ -1,4 +1,4 @@
-from pyspark.sql.types import StructType, StructField, StringType
+from pyspark.sql.types import StructType, StructField, StringType, ArrayType
 
 base_struct_fields = [
     StructField("id", StringType(), False),
@@ -21,6 +21,7 @@ translated_struct_fields = [
 prepared_struct_fields = [
     *translated_struct_fields,
     StructField("prepared_at", StringType(), False),
+    StructField("text_words", ArrayType(StringType()), False),
     StructField("message_id", StringType(), False)
 ]
 

@@ -6,12 +6,12 @@ from pyspark.sql import Row
 from pyspark.sql.streaming.readwriter import DataStreamReader
 from pyspark.sql.types import StringType
 
-from .config import Config
-from .spark import (
+from src.config import Config
+from src.spark import (
     build_kafka_read_stream, build_spark_context, 
     parse_kafka_stream_by_schema, write_stream_to_kafka
 )
-from .schema import raw_message_schema
+from src.schema import raw_message_schema
 
 spark = build_spark_context(Config.SPARK_HOST, Config.SPARK_PORT)
 
@@ -49,3 +49,6 @@ def prepare_message(message_row: Row) -> str:
         message_dict["text"] = ts.translate_text(message_dict["text"], translator='google', to_language='en')
     return json.dumps(message_dict)
 
+
+if __name__ == '__main__':
+    init_propaganda_translator()
