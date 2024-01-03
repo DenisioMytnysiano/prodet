@@ -2,7 +2,6 @@ import json
 from datetime import datetime
 import pyspark.sql.functions as F
 from pyspark.sql.streaming.readwriter import DataStreamReader
-from pyspark.sql import Row
 
 
 from .config import Config
@@ -40,11 +39,13 @@ def process_message(message_row: str) -> str:
     from keras.models import load_model
     import tensorflow_hub as hub
 
-    message = message_row.asDict()
-    model = load_model("/etc/propaganda-model.keras", custom_objects={
+    if not process_message.model:
+       process_message.model = load_model("/etc/propaganda-model.keras", custom_objects={
         'KerasLayer': hub.KerasLayer
     })
-    prediction = model.predict([message["text"]])
+
+    message = message_row.asDict()
+    prediction = process_message.model.predict([message["text"]])
     print("PREDICTION_TEST_NEW", prediction)
 
     message["propaganda"] = str(prediction[0][0])

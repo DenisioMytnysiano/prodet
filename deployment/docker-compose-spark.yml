@@ -10,7 +10,6 @@ services:
     volumes:
       - ./spark/entrypoint.sh:/etc/entrypoint.sh
       # - ./spark/propaganda-model.keras:/etc/propaganda-model.keras
-      # - ./spark/tokenizer.pickle:/etc/tokenizer.pickle
     networks:
       - pd-spark_network
       - pd-kafka_network
