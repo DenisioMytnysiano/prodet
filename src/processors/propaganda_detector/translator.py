@@ -36,14 +36,16 @@ def prepare_stream(stream: DataStreamReader) -> DataStreamReader:
 
 @F.udf(returnType=StringType())
 def prepare_message(message_row: Row) -> str:
-    import spacy
-    import spacy_fastlang
-    nlp = spacy.load("en_core_web_sm")
-    nlp.add_pipe("language_detector")
-
+    if not hasattr(prepare_message, 'nlp'):
+        import spacy
+        import spacy_fastlang
+        nlp = spacy.load("en_core_web_sm")
+        nlp.add_pipe("language_detector")
+        prepare_message.nlp = nlp
+    
     message_dict = message_row.asDict()
     message_dict["translated_at"] = datetime.now().isoformat()
-    message_dict["language"] = nlp(message_dict["text"])._.language
+    message_dict["language"] = prepare_message.nlp(message_dict["text"])._.language
     message_dict["original_text"] = message_dict["text"]
     if message_dict["language"] != "en":
         message_dict["text"] = ts.translate_text(message_dict["text"], translator='google', to_language='en')

@@ -13,7 +13,6 @@ grpcio = "^1.60.0"
 protobuf = "^4.25.1"
 grpcio-status = "^1.60.0"
 python-dotenv = "^1.0.0"
-spacy-fastlang = "^2.1.0"
 translators = "^5.8.9"
 
 [tool.poetry.dev-dependencies]

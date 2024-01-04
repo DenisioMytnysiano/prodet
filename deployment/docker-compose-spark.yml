@@ -2,14 +2,13 @@ version: '3.8'
 
 services:
   pd-spark:
-    image: bitnami/spark:3.5.0
-    command: ['sh', '/etc/entrypoint.sh']
+    build:
+      context: ./spark
     ports:
       - '4040:4040'
       - '15002:15002'
     volumes:
-      - ./spark/entrypoint.sh:/etc/entrypoint.sh
-      # - ./spark/propaganda-model.keras:/etc/propaganda-model.keras
+      - ./spark/propaganda-model.keras:/etc/propaganda-model.keras
     networks:
       - pd-spark_network
       - pd-kafka_network

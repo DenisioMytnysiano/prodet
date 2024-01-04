@@ -33,8 +33,8 @@ def process_stream(stream: DataStreamReader) -> None:
 # @F.pandas_udf(StringType(), PandasUDFType.SCALAR)
 @F.udf()
 def process_message(message_row: str) -> str:
-    import time
-    start = time.time()
+    #import time
+    #start = time.time()
     from keras.models import load_model
     import tensorflow_hub as hub
 
@@ -44,15 +44,15 @@ def process_message(message_row: str) -> str:
     })
 
     message = message_row.asDict()
-    prediction = process_message.model.predict([message["text"]])
+    prediction = process_message.model.predict([message["text"]], verbose=False)
     propaganda = prediction[0][0]
-    print("PREDICTION_TEST_NEW", prediction)
+    #print("PREDICTION_TEST_NEW", prediction)
 
-    message["propaganda"] = str(propaganda)
+    message["propaganda"] = str(round(propaganda, 3))
     message["processed_at"] = datetime.now().isoformat()
     message["is_propaganda"] = "1" if propaganda > 0.5 else "0"
-    end = time.time()
-    print("TIME_USED_TEST_NEW", end - start)  
+   ## end = time.time()
+   # print("TIME_USED_TEST_NEW", end - start)  
 
     return json.dumps(message)
 

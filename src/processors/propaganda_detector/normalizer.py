@@ -35,12 +35,26 @@ def prepare_stream(stream: DataStreamReader) -> DataStreamReader:
 
 @F.udf(returnType=StringType())
 def prepare_message(message_row: Row) -> str:
+    if not hasattr(prepare_message, 'sw'):
+        import nltk
+        from nltk.corpus import stopwords
+        nltk.data.path.append('/tmp/ntlk')
+        sw = stopwords.words('english')
+        prepare_message.sw = sw
+
     message_dict = message_row.asDict()
+    text_words = message_dict["text"]
+
+    punctuations = '@#!?+&*[]-%.:/();$=><|{}^' + "'`" + '_'
+    for p in punctuations:
+        text_words = text_words.replace(p,'') #Removing punctuations        
+    text_words = [word.lower() for word in text_words.split() if word.lower() not in prepare_message.sw]
+
     message_dict["message_id"] = message_dict["id"]
     message_dict["id"] = str(uuid.uuid4())
     message_dict["prepared_at"] = datetime.now().isoformat()
     message_dict["text"] = normalize_line(message_dict["text"])
-    message_dict["text_words"] = message_dict["text"].split(" ")
+    message_dict["text_words"] = text_words
     return json.dumps(message_dict)
 
 def normalize_line(p: str) -> str:
